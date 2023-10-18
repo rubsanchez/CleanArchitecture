@@ -12,13 +12,32 @@ StreamerDbContext dbContext = new();
 //await AddNewVideoWithStreamerId();
 //await AddNewActorWithVideo();
 //await AddNewDirectorWithVideo();
+await MultipleEntitiesQuery();
 
 
 async Task MultipleEntitiesQuery()
 {
-    var videoWithActors = await dbContext.Videos!
-                            .Include(x => x.Actors)
-                            .FirstOrDefaultAsync(x => x.Id == 1);
+    //var videoWithActors = await dbContext.Videos!
+    //                        .Include(x => x.Actors)
+    //                        .FirstOrDefaultAsync(x => x.Id == 1);S
+
+    //var actor = await dbContext!.Actors!.Select(a => a.Name).ToListAsync();
+
+    var videoWithDirector = await dbContext!.Videos!
+                                .Where(v => v.Director != null)
+                                .Include(v => v.Director)
+                                .Select(v => new
+                                {
+                                    MyDirector = $"{v.Director.Name} {v.Director.Surname}",
+                                    Movie = v.Name
+                                })
+                                .ToListAsync();
+
+    foreach (var video in videoWithDirector)
+    {
+        Console.WriteLine($"{video.Movie} - {video.MyDirector}");
+    }
+
 }
 
 async Task AddNewDirectorWithVideo()
@@ -135,10 +154,6 @@ async Task AddNewRecords()
         Name = "Disney+",
         Url = "https://www.disneyplus.com"
     };
-
-    dbContext!.Streamers!.Add(streamer);
-
-    await dbContext.SaveChangesAsync();
 
 
     var movies = new List<Video>()

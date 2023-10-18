@@ -14,7 +14,7 @@ namespace CleanArchitecture.Data
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder
-                .UseSqlServer("Data Source=localhost\\sqlexpress; Initial Catalog=Streamer;Integrated Security=True")
+                .UseSqlServer("Data Source=ruben\\sqlexpress; Initial Catalog=Streamer;Integrated Security=True")
                 .LogTo(Console.WriteLine, new[] { DbLoggerCategory.Database.Command.Name }, LogLevel.Information)
                 .EnableSensitiveDataLogging();
 
