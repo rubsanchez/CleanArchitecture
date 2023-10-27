@@ -14,16 +14,6 @@ namespace CleanArchitecture.Infrastucture.Persistence
 
         public StreamerDbContext(DbContextOptions<StreamerDbContext> options) : base(options) { }
 
-        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //{
-        //    optionsBuilder
-        //        .UseSqlServer("Data Source=ruben\\sqlexpress; Initial Catalog=Streamer;Integrated Security=True")
-        //        .LogTo(Console.WriteLine, new[] { DbLoggerCategory.Database.Command.Name }, LogLevel.Information)
-        //        .EnableSensitiveDataLogging();
-
-        //    base.OnConfiguring(optionsBuilder);
-        //}
-
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             foreach (var entry in ChangeTracker.Entries<BaseDomainModel>())
