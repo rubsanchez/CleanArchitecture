@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CleanArchitecture.Data\CleanArchitecture.Infrastucture.csproj" />
+    <ProjectReference Include="..\CleanArchitecture.Identity\CleanArchitecture.Identity.csproj" />
   </ItemGroup>
 
 </Project>

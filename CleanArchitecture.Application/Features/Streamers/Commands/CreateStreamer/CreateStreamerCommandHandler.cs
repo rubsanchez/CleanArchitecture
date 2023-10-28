@@ -8,13 +8,13 @@ namespace CleanArchitecture.Application.Features.Streamers.Commands.CreateStream
 {
     public class CreateStreamerCommandHandler : IRequestHandler<CreateStreamerCommand, int>
     {
-        private readonly IStreamerRepository _streamerRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly ILogger<CreateStreamerCommandHandler> _logger;
 
-        public CreateStreamerCommandHandler(IStreamerRepository streamerRepository, IMapper mapper, ILogger<CreateStreamerCommandHandler> logger)
+        public CreateStreamerCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ILogger<CreateStreamerCommandHandler> logger)
         {
-            _streamerRepository = streamerRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
             _logger = logger;
         }
@@ -22,11 +22,18 @@ namespace CleanArchitecture.Application.Features.Streamers.Commands.CreateStream
         public async Task<int> Handle(CreateStreamerCommand request, CancellationToken cancellationToken)
         {
             var streamerEntity = _mapper.Map<Streamer>(request);
-            var newStreamer = await _streamerRepository.AddAsync(streamerEntity);
+            _unitOfWork.Repository<Streamer>().AddEntity(streamerEntity);
+            var res = await _unitOfWork.Complete();
 
-            _logger.LogInformation($"Streamer {newStreamer.Id} created succesfully");
+            if (res <= 0)
+            {
+                _logger.LogError("Streamer could not be created");
+                throw new Exception("Streamer could not be created");
+            }
 
-            return newStreamer.Id;
+            _logger.LogInformation($"Streamer {streamerEntity.Id} created succesfully");
+
+            return streamerEntity.Id;
         }
     }
 }

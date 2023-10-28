@@ -86,9 +86,25 @@ namespace CleanArchitecture.Application.Contracts.Repositories
         public async Task DeleteAsync(int id)
         {
             var dbSet = _context.Set<T>();
-            dbSet.Remove(await dbSet.FindAsync(id));
+            dbSet.Remove((await dbSet.FindAsync(id))!);
 
             await _context.SaveChangesAsync();
+        }
+
+        public void AddEntity(T entity)
+        {
+            _context.Set<T>().Add(entity);
+        }
+
+        public void UpdateEntity(T entity)
+        {
+            _context.Entry(entity).State = EntityState.Modified;
+        }
+
+        public void DeleteEntity(int id)
+        {
+            var dbSet = _context.Set<T>();
+            dbSet.Remove(dbSet.Find(id)!);
         }
     }
 }

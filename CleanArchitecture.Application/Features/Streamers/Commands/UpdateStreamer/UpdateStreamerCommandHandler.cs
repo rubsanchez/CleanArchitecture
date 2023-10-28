@@ -9,20 +9,20 @@ namespace CleanArchitecture.Application.Features.Streamers.Commands.UpdateStream
 {
     public class UpdateStreamerCommandHandler : IRequestHandler<UpdateStreamerCommand>
     {
-        private readonly IStreamerRepository _streamerRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private IMapper _mapper;
         private ILogger<UpdateStreamerCommandHandler> _logger;
 
-        public UpdateStreamerCommandHandler(IStreamerRepository streamerRepository, IMapper mapper, ILogger<UpdateStreamerCommandHandler> logger)
+        public UpdateStreamerCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ILogger<UpdateStreamerCommandHandler> logger)
         {
-            _streamerRepository = streamerRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
             _logger = logger;
         }
 
         public async Task<Unit> Handle(UpdateStreamerCommand request, CancellationToken cancellationToken)
         {
-            var streamer = await _streamerRepository.GetByIdAsync(request.Id);
+            var streamer = await _unitOfWork.Repository<Streamer>().GetByIdAsync(request.Id);
 
             if (streamer == null)
             {
@@ -32,7 +32,8 @@ namespace CleanArchitecture.Application.Features.Streamers.Commands.UpdateStream
 
             _mapper.Map<Streamer>(request);
 
-            await _streamerRepository.UpdateAsync(streamer);
+            _unitOfWork.Repository<Streamer>().UpdateEntity(streamer);
+            await _unitOfWork.Complete();
 
             _logger.LogInformation($"Streamer {request.Id} updated successfully");
 

@@ -9,20 +9,20 @@ namespace CleanArchitecture.Application.Features.Streamers.Commands.DeleteStream
 {
     public class DeleteStreamerCommandHandler : IRequestHandler<DeleteStreamerCommand>
     {
-        private readonly IStreamerRepository _streamerRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private IMapper _mapper;
         private ILogger<DeleteStreamerCommandHandler> _logger;
 
-        public DeleteStreamerCommandHandler(IStreamerRepository streamerRepository, IMapper mapper, ILogger<DeleteStreamerCommandHandler> logger)
+        public DeleteStreamerCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ILogger<DeleteStreamerCommandHandler> logger)
         {
-            _streamerRepository = streamerRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
             _logger = logger;
         }
 
         public async Task<Unit> Handle(DeleteStreamerCommand request, CancellationToken cancellationToken)
         {
-            var streamer = _streamerRepository.GetByIdAsync(request.Id);
+            var streamer = _unitOfWork.Repository<Streamer>().GetByIdAsync(request.Id);
 
             if (streamer == null)
             {
@@ -30,7 +30,8 @@ namespace CleanArchitecture.Application.Features.Streamers.Commands.DeleteStream
                 throw new NotFoundException(nameof(Streamer), request.Id);
             }
 
-            await _streamerRepository.DeleteAsync(request.Id);
+            _unitOfWork.Repository<Streamer>().DeleteEntity(request.Id);
+            await _unitOfWork.Complete();
 
             _logger.LogInformation($"Streamer {request.Id} deleted successfully");
 

@@ -16,8 +16,8 @@ namespace CleanArchitecture.Infrastucture
                 options.UseSqlServer(configuration.GetConnectionString("StreamerDB"))
             );
 
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped(typeof(IAsyncRepository<>), typeof(RepositoryBase<>));
-            services.AddScoped<IStreamerRepository, StreamerRepository>();
             services.AddScoped<IVideoRepository, VideoRepository>();
 
             return services;

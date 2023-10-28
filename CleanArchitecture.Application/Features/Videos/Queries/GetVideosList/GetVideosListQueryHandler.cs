@@ -7,18 +7,18 @@ namespace CleanArchitecture.Application.Features.Videos.Queries.GetVideosList
 {
     public class GetVideosListQueryHandler : IRequestHandler<GetVideosListQuery, IList<VideoDto>>
     {
-        private readonly IVideoRepository _videoRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public GetVideosListQueryHandler(IVideoRepository videoRepository, IMapper mapper)
+        public GetVideosListQueryHandler(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _videoRepository = videoRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
         public async Task<IList<VideoDto>> Handle(GetVideosListQuery request, CancellationToken cancellationToken)
         {
-            IEnumerable<Video> videoList = await _videoRepository.GetVideoByUserName(request.Username);
+            IEnumerable<Video> videoList = await _unitOfWork.VideoRepository.GetVideoByUserName(request.Username);
 
             return _mapper.Map<IList<VideoDto>>(videoList);
         }
